@@ -164,6 +164,10 @@ def delete_news(id):
         abort(404)
     return redirect('/')
 
+@app.route('/chat')
+@login_required
+def chat():
+    return render_template('CHAT.html')
 
 if __name__ == "__main__":
     db_session.global_init("db/blogs.db")
