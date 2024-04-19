@@ -4,18 +4,26 @@
 <button id="send" title="Send Message!" style="width: 100%; height: 30px;">Отправить котопосылку</button>
 
 <script>
+
   (function() {
     const sendBtn = document.querySelector('#send');
     const messages = document.querySelector('#messages');
     const messageBox = document.querySelector('#messageBox');
-
+    var userName = "{{current_user.name}}";
     let ws;
 
-    function showMessage(message) {
-      messages.textContent += `\n\n${message}`;
+
+
+    function showMessage(message, ownMessage = false) {
+      console.log(message, ownMessage)
+      const now = new Date();
+      const timestamp = now.toLocaleTimeString();
+      const messageSource = message.sender
+      messages.textContent += `\n[${timestamp}] ${messageSource}: ${message.message}`;
       messages.scrollTop = messages.scrollHeight;
-      messageBox.value = '';
+      if (ownMessage) messageBox.value = '';
     }
+
 
     function init() {
       if (ws) {
@@ -24,23 +32,28 @@
       }
 
       ws = new WebSocket('ws://localhost:6969');
-      ws.onopen = () => {
-        console.log('Connection opened!');
-      }
-      ws.onmessage = ({ data }) => showMessage(data);
-      ws.onclose = function() {
-        ws = null;
-      }
+      ws.onopen = () => console.log('Connection opened!');
+      ws.onmessage = ({ data }) => {
+
+        const messageData = JSON.parse(data);
+        console.log(messageData)
+        showMessage(messageData, messageData.sender === userName);
+      };
+      ws.onclose = () => ws = null;
     }
 
     sendBtn.onclick = function() {
       if (!ws) {
-        showMessage("No WebSocket connection :(");
-        return ;
+        showMessage("No WebSocket connection :(", true);
+        return;
       }
-
-      ws.send(messageBox.value);
-      showMessage(messageBox.value);
+      const messageToSend = {
+        sender: userName,
+        message: messageBox.value,
+        timestamp: new Date().toISOString()
+      };
+      ws.send(JSON.stringify(messageToSend));
+      showMessage(messageToSend, true);
     }
 
     init();
