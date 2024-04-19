@@ -8,9 +8,10 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from forms.loginform import LoginForm
 from forms.news import NewsForm
 from blueprint import news_api
+import os
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'yandex_123'
+app.config['SECRET_KEY'] = os.urandom(24)
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=365)
 
 login_manager = LoginManager()
