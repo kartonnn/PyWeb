@@ -1,5 +1,5 @@
-<h1>Чатик💌</h1>
-<a class="navbar-brand" href='/' >Вернуться на форум</a>
+<h1>Чатик💌</h1> #НАЗВАНИЕ ЧАТА
+<a class="navbar-brand" href='/' >Вернуться на форум</a> #ссылка обратно на форум
 <pre id="messages" style="height: 400px; overflow: scroll"></pre>
 <input type="text" id="messageBox" placeholder="Напиши своему котёнку" style="display: block; width: 100%; margin-bottom: 10px; padding: 10px;" />
 <button id="send" title="Send Message!" style="width: 100%; height: 30px;">Отправить котопосылку</button>
@@ -10,11 +10,11 @@
     const sendBtn = document.querySelector('#send');
     const messages = document.querySelector('#messages');
     const messageBox = document.querySelector('#messageBox');
-    var userName = "{{current_user.name}}";
+    var userName = "{{current_user.name}}"; #имя пользователя 
     let ws;
 
 
-
+    #функция которая отображает сообщения
     function showMessage(message, ownMessage = false) {
       console.log(message, ownMessage)
       const now = new Date();
@@ -31,7 +31,7 @@
         ws.onerror = ws.onopen = ws.onclose = null;
         ws.close();
       }
-
+      #порт чата
       ws = new WebSocket('ws://localhost:6969');
       ws.onopen = () => console.log('Connection opened!');
       ws.onmessage = ({ data }) => {
@@ -42,12 +42,13 @@
       };
       ws.onclose = () => ws = null;
     }
-
+    #при нажатии на эту кнопку пользователь отправляет сообщение, но если сервер отключен то он выдает ошибку
     sendBtn.onclick = function() {
       if (!ws) {
         showMessage("No WebSocket connection :(", true);
         return;
       }
+      #отображание имя пользователя, сообщение и время отправки 
       const messageToSend = {
         sender: userName,
         message: messageBox.value,
